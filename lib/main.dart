@@ -41,6 +41,14 @@ List<Note> fakeNotes = [
   Note(name: 'grocery list', date: '2020-09-15'),
   Note(name: 'todo list', date: '2020-09-01'),
   Note(name: 'app ideas', date: '2020-08-01'),
+  Note(name: 'favorite foods', date: '2020-07-03'),
+  Note(name: 'packing list', date: '2020-07-03'),
+  Note(name: 'motorcycles', date: '2020-07-03'),
+  Note(name: 'not a real note', date: '2020-07-03'),
+  Note(name: 'this is just for extra items', date: '2020-07-03'),
+  Note(name: 'doesn\'t matter what this is called', date: '2020-07-03'),
+  Note(name: 'another note', date: '2020-07-03'),
+  Note(name: 'another note', date: '2020-07-03'),
 ];
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -60,12 +68,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 print("Search field value: $text");
               },
             ),
-            ListView.builder(
-                shrinkWrap: true,
-                itemCount: fakeNotes.length,
-                itemBuilder: (context, index) {
-                  return NoteListItem(note: fakeNotes[index]);
-                }),
+            Expanded(
+              child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: fakeNotes.length,
+                  itemBuilder: (context, index) {
+                    return NoteListItem(note: fakeNotes[index]);
+                  }),
+            ),
           ],
         ),
       ),
@@ -80,8 +90,14 @@ class NoteListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [Text(note.name), Text(note.date)]);
+    return Container(
+      child: Card(
+        child: ListTile(
+          title: Text(note.name),
+          subtitle: Text(note.date),
+          dense: true,
+        ),
+      ),
+    );
   }
 }
