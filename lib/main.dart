@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 void main() {
   runApp(MyApp());
@@ -30,15 +29,21 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
+class Note {
+  String name;
+  String date;
+
+  Note({this.name, this.date});
+}
+
+List<Note> fakeNotes = [
+  Note(name: 'Meeting notes', date: '2020-10-01'),
+  Note(name: 'grocery list', date: '2020-09-15'),
+  Note(name: 'todo list', date: '2020-09-01'),
+  Note(name: 'app ideas', date: '2020-08-01'),
+];
+
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,29 +52,36 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             TextField(
               decoration: InputDecoration(hintText: 'Create or find a note'),
-
+              onChanged: (text) {
+                print("Search field value: $text");
+              },
             ),
-            Text(
-              'Put note list here',
-            ),
-            Text(
-              'Put note list here',
-            ),
-            Text(
-              'Put note list here',
-            ),
+            ListView.builder(
+                shrinkWrap: true,
+                itemCount: fakeNotes.length,
+                itemBuilder: (context, index) {
+                  return NoteListItem(note: fakeNotes[index]);
+                }),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ),
     );
+  }
+}
+
+class NoteListItem extends StatelessWidget {
+  final Note note;
+
+  const NoteListItem({Key key, this.note}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [Text(note.name), Text(note.date)]);
   }
 }
