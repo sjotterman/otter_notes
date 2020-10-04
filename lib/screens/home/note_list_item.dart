@@ -6,14 +6,21 @@ class NoteListItem extends StatelessWidget {
 
   const NoteListItem({Key key, this.note}) : super(key: key);
 
+  void _onTap() {
+    print("Tapped '${note.name}'");
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Card(
-        child: ListTile(
-          title: Text(note.name),
-          subtitle: Text(note.date),
-          dense: true,
+    return GestureDetector(
+      onTap: _onTap,
+      child: Container(
+        child: Card(
+          child: ListTile(
+            title: Text(note.name),
+            subtitle: Text("Created: ${note.date}"),
+            dense: true,
+          ),
         ),
       ),
     );

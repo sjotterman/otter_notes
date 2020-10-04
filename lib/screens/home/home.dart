@@ -23,23 +23,45 @@ List<Note> fakeNotes = [
   Note(name: 'this is just for extra items', date: '2020-07-03'),
   Note(name: 'doesn\'t matter what this is called', date: '2020-07-03'),
   Note(name: 'another note', date: '2020-07-03'),
-  Note(name: 'another note', date: '2020-07-03'),
+  Note(name: 'more app ideas', date: '2020-07-03'),
 ];
 
 class _HomeState extends State<Home> {
-  List<Note> filteredNotes = fakeNotes;
-  String searchFieldText;
+  List<Note> _filteredNotes = fakeNotes;
+  String _searchFieldText = '';
+  bool _showCreateButton = false;
 
-  void onSearchChanged(text) {
-    print("Search field value: $text");
+  void _onSearchChanged(text) {
     setState(() {
-      searchFieldText = text;
-      filteredNotes = fakeNotes.where((note) {
+      _searchFieldText = text;
+      _filteredNotes = fakeNotes.where((note) {
         return note.name.toLowerCase().contains(text.toString().toLowerCase());
       }).toList();
+      bool isOriginalName = fakeNotes.every((element) {
+        return element.name != _searchFieldText;
+      });
+      _showCreateButton = isOriginalName && _searchFieldText.isNotEmpty;
     });
   }
 
+  void _onEditingComplete() {
+    print("Editing complete: ");
+    print(_searchFieldText);
+    if (_searchFieldText.isEmpty) {
+      print('Empty, do nothing');
+      return;
+    }
+    if (_filteredNotes.length == 1) {
+      print('Only one item');
+      print('open ${_filteredNotes[0].name}');
+    }
+    if (_filteredNotes.length == 0) {
+      print('No matches');
+      print('create $_searchFieldText');
+    }
+  }
+
+  final TextEditingController _controller = new TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,15 +73,44 @@ class _HomeState extends State<Home> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             TextField(
-              decoration: InputDecoration(hintText: 'Create or find a note'),
-              onChanged: onSearchChanged,
+              controller: _controller,
+              decoration: InputDecoration(
+                hintText: 'Create or find a note',
+                suffixIcon: _searchFieldText.isNotEmpty
+                    ? IconButton(
+                        icon: Icon(Icons.clear),
+                        onPressed: () {
+                          _controller.clear();
+                          this.setState(() {
+                            _searchFieldText = '';
+                          });
+                          _onSearchChanged('');
+                        })
+                    : null,
+              ),
+              onChanged: _onSearchChanged,
+              onEditingComplete: _onEditingComplete,
             ),
+            if (_showCreateButton)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("Create '$_searchFieldText'"),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      print("Create note called '$_searchFieldText'");
+                    },
+                    label: Text('Create'),
+                    icon: Icon(Icons.add),
+                  )
+                ],
+              ),
             Expanded(
               child: ListView.builder(
                   shrinkWrap: true,
-                  itemCount: filteredNotes.length,
+                  itemCount: _filteredNotes.length,
                   itemBuilder: (context, index) {
-                    return NoteListItem(note: filteredNotes[index]);
+                    return NoteListItem(note: _filteredNotes[index]);
                   }),
             ),
           ],
