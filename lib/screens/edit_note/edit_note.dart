@@ -44,7 +44,7 @@ class _EditNoteState extends State<EditNote> {
 
   void _onContentsChanged(text) {
     _debouncer.run(() {
-      NoteService().writeNote(note.name, text);
+      NoteService().writeNote(note.fileName, text);
     });
   }
 

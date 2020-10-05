@@ -51,14 +51,19 @@ class NoteService {
     Directory dir = Directory(localPath);
     List<FileSystemEntity> listOfAllFolderAndFiles =
         await dir.list(recursive: false).toList();
-    var notes = listOfAllFolderAndFiles.map((item) {
+    var notes = listOfAllFolderAndFiles.map((item) async {
       // TODO: change statSync, as it could be slow
+      if (!(item is File)) {
+        return null;
+      }
+      File file = (item as File);
+      String content = await file.readAsString();
       return Note(
-        name: path.basenameWithoutExtension(item.path),
-        fileName: path.basename(item.path),
-        modified: item.statSync().modified,
-      );
+          name: path.basenameWithoutExtension(item.path),
+          fileName: path.basename(item.path),
+          modified: item.statSync().modified,
+          content: content);
     }).toList();
-    return notes;
+    return await Future.wait(notes);
   }
 }

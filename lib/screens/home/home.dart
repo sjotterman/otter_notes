@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:otter_notes/screens/edit_note/edit_note.dart';
 import 'package:otter_notes/screens/home/note.dart';
@@ -38,7 +36,11 @@ class _HomeState extends State<Home> {
     setState(() {
       _searchFieldText = text;
       _filteredNotes = _allNotes.where((note) {
-        return note.name.toLowerCase().contains(text.toString().toLowerCase());
+        var titleMatch =
+            note.name.toLowerCase().contains(text.toString().toLowerCase());
+        var contentMatch =
+            note.content.toLowerCase()?.contains(text.toString().toLowerCase());
+        return (titleMatch || contentMatch);
       }).toList();
       bool isOriginalName = _allNotes.every((element) {
         return element.name != _searchFieldText;
@@ -50,7 +52,6 @@ class _HomeState extends State<Home> {
   void _onEditingComplete() {
     print("Editing complete: ");
     print(_searchFieldText);
-    // NoteService().writeNote('test3');
     if (_searchFieldText.isEmpty) {
       print('Empty, do nothing');
       return;
@@ -81,6 +82,11 @@ class _HomeState extends State<Home> {
     _clearSearch();
   }
 
+  void _onFinishEdit() {
+    _getNoteList();
+    _clearSearch();
+  }
+
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
@@ -99,6 +105,8 @@ class _HomeState extends State<Home> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             TextField(
+              autofocus: true,
+              autocorrect: false,
               controller: _controller,
               decoration: InputDecoration(
                 hintText: 'Create or find a note',
@@ -132,7 +140,10 @@ class _HomeState extends State<Home> {
                   shrinkWrap: true,
                   itemCount: _filteredNotes.length,
                   itemBuilder: (context, index) {
-                    return NoteListItem(note: _filteredNotes[index]);
+                    return NoteListItem(
+                      note: _filteredNotes[index],
+                      onFinishEdit: _onFinishEdit,
+                    );
                   }),
             ),
           ],
