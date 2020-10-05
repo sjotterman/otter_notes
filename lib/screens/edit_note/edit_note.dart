@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:otter_notes/screens/home/note.dart';
+import 'package:otter_notes/services/note_service.dart';
 
 class EditNote extends StatefulWidget {
   EditNote(this.note, {Key key}) : super(key: key);
@@ -11,6 +12,15 @@ class EditNote extends StatefulWidget {
 
 class _EditNoteState extends State<EditNote> {
   final Note note;
+  String _noteContents = 'loading...';
+  void initState() {
+    super.initState();
+    NoteService().readNote(note.name).then((contents) {
+      setState(() {
+        _noteContents = contents;
+      });
+    });
+  }
 
   _EditNoteState(this.note);
 
@@ -21,7 +31,7 @@ class _EditNoteState extends State<EditNote> {
       body: Center(
           child: Column(
         children: [
-          Text('Modified: ${note.date}'),
+          Text(_noteContents),
         ],
       )),
     );
