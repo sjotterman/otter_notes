@@ -12,16 +12,17 @@ class NoteService {
     return directory.path;
   }
 
-  Future<File> get _localFile async {
+  Future<File> writeNote(String fileName, String content) async {
     final path = await noteDir;
-    return File('$path/test_note.md');
-  }
-
-  // TODO: set name and content
-  Future<File> writeNote(String content) async {
-    final file = await _localFile;
+    final file = File('$path/$fileName');
     print('Writing: $content');
     return file.writeAsString(content);
+  }
+
+  Future<Note> createNote(String fileName) async {
+    File newNoteFile = await writeNote(fileName, '');
+    Note newNote = Note(name: fileName, date: DateTime.now().toIso8601String());
+    return newNote;
   }
 
   Future<String> readNote(String fileName) async {

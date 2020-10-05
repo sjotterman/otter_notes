@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:otter_notes/screens/edit_note/edit_note.dart';
 import 'package:otter_notes/screens/home/note.dart';
 import 'package:otter_notes/screens/home/note_list_item.dart';
 import 'package:otter_notes/services/note_service.dart';
@@ -12,29 +13,19 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
-List<Note> fakeNotes = [
-  Note(name: 'Meeting notes', date: '2020-10-01'),
-  Note(name: 'grocery list', date: '2020-09-15'),
-  Note(name: 'todo list', date: '2020-09-01'),
-  Note(name: 'app ideas', date: '2020-08-01'),
-  Note(name: 'favorite foods', date: '2020-07-03'),
-  Note(name: 'packing list', date: '2020-07-03'),
-  Note(name: 'motorcycles', date: '2020-07-03'),
-  Note(name: 'not a real note', date: '2020-07-03'),
-  Note(name: 'this is just for extra items', date: '2020-07-03'),
-  Note(name: 'doesn\'t matter what this is called', date: '2020-07-03'),
-  Note(name: 'another note', date: '2020-07-03'),
-  Note(name: 'more app ideas', date: '2020-07-03'),
-];
-
 class _HomeState extends State<Home> {
   List<Note> _allNotes = [];
   List<Note> _filteredNotes = [];
   String _searchFieldText = '';
   bool _showCreateButton = false;
+  final TextEditingController _controller = new TextEditingController();
 
   void initState() {
     super.initState();
+    _getNoteList();
+  }
+
+  void _getNoteList() {
     NoteService().listNotes().then((notes) {
       setState(() {
         _allNotes = notes;
@@ -67,14 +58,36 @@ class _HomeState extends State<Home> {
     if (_filteredNotes.length == 1) {
       print('Only one item');
       print('open ${_filteredNotes[0].name}');
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EditNote(_filteredNotes[0]),
+          ));
     }
     if (_filteredNotes.length == 0) {
-      print('No matches');
-      print('create $_searchFieldText');
+      navigateToNewNote();
     }
   }
 
-  final TextEditingController _controller = new TextEditingController();
+  void navigateToNewNote() {
+    NoteService().createNote('$_searchFieldText.md').then((newNote) {
+      _getNoteList();
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EditNote(newNote),
+          ));
+    });
+    _clearSearch();
+  }
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -93,11 +106,7 @@ class _HomeState extends State<Home> {
                     ? IconButton(
                         icon: Icon(Icons.clear),
                         onPressed: () {
-                          _controller.clear();
-                          this.setState(() {
-                            _searchFieldText = '';
-                          });
-                          _onSearchChanged('');
+                          _clearSearch();
                         })
                     : null,
               ),
@@ -111,7 +120,7 @@ class _HomeState extends State<Home> {
                   Text("Create '$_searchFieldText'"),
                   ElevatedButton.icon(
                     onPressed: () {
-                      print("Create note called '$_searchFieldText'");
+                      navigateToNewNote();
                     },
                     label: Text('Create'),
                     icon: Icon(Icons.add),
@@ -130,5 +139,13 @@ class _HomeState extends State<Home> {
         ),
       ),
     );
+  }
+
+  void _clearSearch() {
+    _controller.clear();
+    this.setState(() {
+      _searchFieldText = '';
+    });
+    _onSearchChanged('');
   }
 }
