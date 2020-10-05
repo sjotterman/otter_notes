@@ -21,7 +21,11 @@ class NoteService {
 
   Future<Note> createNote(String fileName) async {
     File newNoteFile = await writeNote(fileName, '');
-    Note newNote = Note(name: fileName, date: DateTime.now().toIso8601String());
+    Note newNote = Note(
+      fileName: fileName,
+      name: path.basenameWithoutExtension(newNoteFile.path),
+      modified: DateTime.now(),
+    );
     return newNote;
   }
 
@@ -37,6 +41,7 @@ class NoteService {
     } catch (e) {
       // If encountering an error, return 0.
       print('error reading note');
+      print(e.toString());
       return 'error';
     }
   }
@@ -49,8 +54,9 @@ class NoteService {
     var notes = listOfAllFolderAndFiles.map((item) {
       // TODO: change statSync, as it could be slow
       return Note(
-        name: path.basename(item.path),
-        date: item.statSync().modified.toIso8601String(),
+        name: path.basenameWithoutExtension(item.path),
+        fileName: path.basename(item.path),
+        modified: item.statSync().modified,
       );
     }).toList();
     return notes;

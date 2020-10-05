@@ -8,7 +8,6 @@ class NoteListItem extends StatelessWidget {
   const NoteListItem({Key key, this.note}) : super(key: key);
 
   void _onTap(context) {
-    print("Tapped '${note.name}'");
     Navigator.push(
         context,
         MaterialPageRoute(
@@ -24,7 +23,7 @@ class NoteListItem extends StatelessWidget {
         child: Card(
           child: ListTile(
             title: Text(note.name),
-            subtitle: Text("Modified: ${note.date}"),
+            subtitle: Text("Modified: ${note.modified.toLocal().toString()}"),
             dense: true,
           ),
         ),

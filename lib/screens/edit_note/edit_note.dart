@@ -29,14 +29,12 @@ class EditNote extends StatefulWidget {
 class _EditNoteState extends State<EditNote> {
   final Note note;
   final _debouncer = Debouncer(milliseconds: 500);
-  String _noteContents = 'loading...';
   final TextEditingController _controller = new TextEditingController();
 
   void initState() {
     super.initState();
-    NoteService().readNote(note.name).then((contents) {
+    NoteService().readNote(note.fileName).then((contents) {
       setState(() {
-        _noteContents = contents;
         _controller.text = contents;
       });
     });
@@ -47,8 +45,6 @@ class _EditNoteState extends State<EditNote> {
   void _onContentsChanged(text) {
     _debouncer.run(() {
       NoteService().writeNote(note.name, text);
-      print('Contents changed');
-      print(text);
     });
   }
 

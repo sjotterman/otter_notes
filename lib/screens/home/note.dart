@@ -1,6 +1,7 @@
 class Note {
   String name;
-  String date;
+  String fileName;
+  DateTime modified;
 
-  Note({this.name, this.date});
+  Note({this.name, this.fileName, this.modified});
 }
