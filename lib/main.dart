@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:otter_notes/screens/edit_note/edit_note.dart';
 import 'package:otter_notes/screens/home/home.dart';
 
 void main() {
