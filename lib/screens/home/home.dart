@@ -1,11 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:otter_notes/screens/home/note.dart';
 import 'package:otter_notes/screens/home/note_list_item.dart';
+import 'package:otter_notes/services/note_service.dart';
 
 class Home extends StatefulWidget {
-  Home({Key key, this.title}) : super(key: key);
-
-  final String title;
+  Home({Key key}) : super(key: key);
 
   @override
   _HomeState createState() => _HomeState();
@@ -27,17 +28,28 @@ List<Note> fakeNotes = [
 ];
 
 class _HomeState extends State<Home> {
-  List<Note> _filteredNotes = fakeNotes;
+  List<Note> _allNotes = [];
+  List<Note> _filteredNotes = [];
   String _searchFieldText = '';
   bool _showCreateButton = false;
+
+  void initState() {
+    super.initState();
+    NoteService().listNotes().then((notes) {
+      setState(() {
+        _allNotes = notes;
+        _filteredNotes = notes;
+      });
+    });
+  }
 
   void _onSearchChanged(text) {
     setState(() {
       _searchFieldText = text;
-      _filteredNotes = fakeNotes.where((note) {
+      _filteredNotes = _allNotes.where((note) {
         return note.name.toLowerCase().contains(text.toString().toLowerCase());
       }).toList();
-      bool isOriginalName = fakeNotes.every((element) {
+      bool isOriginalName = _allNotes.every((element) {
         return element.name != _searchFieldText;
       });
       _showCreateButton = isOriginalName && _searchFieldText.isNotEmpty;
@@ -47,6 +59,7 @@ class _HomeState extends State<Home> {
   void _onEditingComplete() {
     print("Editing complete: ");
     print(_searchFieldText);
+    // NoteService().writeNote('test3');
     if (_searchFieldText.isEmpty) {
       print('Empty, do nothing');
       return;
@@ -66,7 +79,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text('Search / Create Notes'),
       ),
       body: Center(
         child: Column(

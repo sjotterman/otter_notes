@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:otter_notes/screens/edit_note/edit_note_arguments.dart';
+import 'package:otter_notes/screens/edit_note/edit_note.dart';
 import 'package:otter_notes/screens/home/note.dart';
 
 class NoteListItem extends StatelessWidget {
@@ -9,8 +9,11 @@ class NoteListItem extends StatelessWidget {
 
   void _onTap(context) {
     print("Tapped '${note.name}'");
-    Navigator.pushNamed(context, '/editNote',
-        arguments: EditNoteArguments(note.name));
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => EditNote(note),
+        ));
   }
 
   @override
@@ -21,7 +24,7 @@ class NoteListItem extends StatelessWidget {
         child: Card(
           child: ListTile(
             title: Text(note.name),
-            subtitle: Text("Created: ${note.date}"),
+            subtitle: Text("Modified: ${note.date}"),
             dense: true,
           ),
         ),

@@ -10,20 +10,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Otter Notes',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      darkTheme: ThemeData.dark(),
-      themeMode: ThemeMode.dark,
-      initialRoute: '/',
-      routes: {
-        '/': (context) => Home(
-              title: 'Open Note',
-            ),
-        '/editNote': (context) => EditNote(),
-      },
-    );
+        title: 'Otter Notes',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+        ),
+        darkTheme: ThemeData.dark(),
+        themeMode: ThemeMode.dark,
+        home: Home());
   }
 }
