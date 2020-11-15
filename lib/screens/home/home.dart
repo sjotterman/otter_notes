@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:otter_notes/screens/edit_note/edit_note.dart';
+import 'package:otter_notes/screens/edit_note/settings.dart';
 import 'package:otter_notes/screens/home/note.dart';
 import 'package:otter_notes/screens/home/note_list_item.dart';
 import 'package:otter_notes/services/note_service.dart';
@@ -87,6 +88,14 @@ class _HomeState extends State<Home> {
     _clearSearch();
   }
 
+  void _onPressSettings() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => Settings(),
+        ));
+  }
+
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
@@ -99,6 +108,12 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Search / Create Notes'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: _onPressSettings,
+          ),
+        ],
       ),
       body: Center(
         child: Column(
