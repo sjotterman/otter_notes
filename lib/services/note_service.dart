@@ -51,7 +51,12 @@ class NoteService {
     Directory dir = Directory(localPath);
     List<FileSystemEntity> listOfAllFolderAndFiles =
         await dir.list(recursive: false).toList();
-    var notes = listOfAllFolderAndFiles.map((item) async {
+    List<FileSystemEntity> listOfNotes = listOfAllFolderAndFiles.where((item) {
+      String extension = path.extension(item.path);
+      return extension == '.md';
+    }).toList();
+
+    var notes = listOfNotes.map((item) async {
       // TODO: change statSync, as it could be slow
       if (!(item is File)) {
         return null;
