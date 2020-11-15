@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:otter_notes/services/note_service.dart';
+import 'package:file_picker/file_picker.dart';
 
 class Settings extends StatefulWidget {
   @override
@@ -19,10 +22,18 @@ class _SettingsState extends State<Settings> {
     });
   }
 
-  void _onPressEditDir() {
+  Future<void> _onPressEditDir() async {
     // TODO: open file picker
     // set new directory
-    print('pressed edit dir');
+    print('edit dir');
+    FilePickerResult result = await FilePicker.platform.pickFiles();
+    if (result != null) {
+      File file = File(result.files.single.path);
+      print(file.path);
+    } else {
+      print('cancellled');
+      // User canceled the picker
+    }
   }
 
   @override
