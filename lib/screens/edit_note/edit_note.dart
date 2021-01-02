@@ -68,6 +68,8 @@ class _EditNoteState extends State<EditNote> {
               child: SingleChildScrollView(
                 child: TextField(
                   controller: _controller,
+                  decoration: InputDecoration(
+                      contentPadding: EdgeInsets.symmetric(horizontal: 10)),
                   onChanged: _onContentsChanged,
                   scrollPadding: EdgeInsets.all(20.0),
                   keyboardType: TextInputType.multiline,
