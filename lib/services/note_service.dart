@@ -81,9 +81,10 @@ class NoteService {
           content: content);
     }).toList();
     var noteList = await Future.wait(notes);
-    noteList.sort((a, b) {
+    List<Note> sortList = List.from(noteList);
+    sortList.sort((a, b) {
       return b.modified.compareTo(a.modified);
     });
-    return noteList;
+    return sortList;
   }
 }
