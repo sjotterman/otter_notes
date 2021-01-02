@@ -96,6 +96,12 @@ class _HomeState extends State<Home> {
         ));
   }
 
+  void _onPressRefresh() {
+    print('refreshing');
+    _getNoteList();
+    _clearSearch();
+  }
+
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
@@ -112,6 +118,10 @@ class _HomeState extends State<Home> {
           IconButton(
             icon: Icon(Icons.settings),
             onPressed: _onPressSettings,
+          ),
+          IconButton(
+            icon: Icon(Icons.refresh),
+            onPressed: _onPressRefresh,
           ),
         ],
       ),
