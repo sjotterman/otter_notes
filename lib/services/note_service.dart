@@ -3,6 +3,7 @@ import 'package:otter_notes/screens/home/note.dart';
 import 'package:path/path.dart' as path;
 
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NoteService {
@@ -58,6 +59,11 @@ class NoteService {
   }
 
   Future<List<Note>> listNotes() async {
+    var permission = await Permission.storage.request().isGranted;
+    if (!permission) {
+      print('permission denied');
+      return [];
+    }
     String localPath = await noteDir;
     Directory dir = Directory(localPath);
     List<FileSystemEntity> listOfAllFolderAndFiles =
