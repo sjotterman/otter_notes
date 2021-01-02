@@ -60,8 +60,7 @@ class _EditNoteState extends State<EditNote> {
     super.dispose();
   }
 
-  // TODO: confirmation
-  void _onPressRestore() {
+  void _restoreNote() {
     print('press restore');
     if (history.length < 2) {
       // TODO: Alert here
@@ -74,6 +73,40 @@ class _EditNoteState extends State<EditNote> {
       history.add(origText);
       _controller.text = origText;
     });
+  }
+
+  _showResetConfirmDialog(BuildContext context) {
+    // set up the buttons
+    Widget cancelButton = FlatButton(
+      child: Text("Cancel"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+    Widget continueButton = FlatButton(
+      child: Text("Discard"),
+      onPressed: () {
+        _restoreNote();
+        Navigator.of(context).pop();
+      },
+    );
+
+    AlertDialog alert = AlertDialog(
+      title: Text("AlertDialog"),
+      content: Text("Are you sure you want to discard all changes?"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 
   void _onPressUndo() {
@@ -105,10 +138,10 @@ class _EditNoteState extends State<EditNote> {
               // onPressed: hasChanges ? _onPressUndo : null,
               onPressed: _onPressUndo),
           IconButton(
-            icon: Icon(Icons.restore),
-            // onPressed: hasChanges ? _onPressRestore : null,
-            onPressed: _onPressRestore,
-          ),
+              icon: Icon(Icons.restore),
+              onPressed: () {
+                _showResetConfirmDialog(context);
+              }),
         ],
       ),
       body: Center(
