@@ -80,6 +80,10 @@ class NoteService {
           modified: item.statSync().modified,
           content: content);
     }).toList();
-    return await Future.wait(notes);
+    var noteList = await Future.wait(notes);
+    noteList.sort((a, b) {
+      return b.modified.compareTo(a.modified);
+    });
+    return noteList;
   }
 }
