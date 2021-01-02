@@ -28,6 +28,7 @@ class EditNote extends StatefulWidget {
 
 class _EditNoteState extends State<EditNote> {
   final Note note;
+  final List<String> history = [];
   final _debouncer = Debouncer(milliseconds: 500);
   final TextEditingController _controller = new TextEditingController();
 
@@ -36,6 +37,7 @@ class _EditNoteState extends State<EditNote> {
     NoteService().readNote(note.fileName).then((contents) {
       setState(() {
         _controller.text = contents;
+        history.add(contents);
       });
     });
   }
@@ -46,6 +48,8 @@ class _EditNoteState extends State<EditNote> {
   void _onContentsChanged(text) {
     _debouncer.run(() {
       NoteService().writeNote(note.fileName, text);
+      history.add(text);
+      print("history: " + history.toString());
     });
   }
 
@@ -56,10 +60,57 @@ class _EditNoteState extends State<EditNote> {
     super.dispose();
   }
 
+  // TODO: confirmation
+  void _onPressRestore() {
+    print('press restore');
+    if (history.length < 2) {
+      // TODO: Alert here
+      print('No further changes!');
+      return;
+    }
+    var origText = history[0];
+    setState(() {
+      history.clear();
+      history.add(origText);
+      _controller.text = origText;
+    });
+  }
+
+  void _onPressUndo() {
+    print('press undo');
+    if (history.length < 2) {
+      print('history is smaller than 2');
+      return;
+    }
+    var newText;
+    history.removeLast();
+    setState(() {
+      newText = history.last;
+      _controller.text = newText;
+    });
+    print(newText);
+    NoteService().writeNote(note.fileName, newText);
+  }
+
   @override
   Widget build(BuildContext context) {
+    // var hasChanges = history.length > 1;
+
     return Scaffold(
-      appBar: AppBar(title: Text(note.name)),
+      appBar: AppBar(
+        title: Text(note.name),
+        actions: <Widget>[
+          IconButton(
+              icon: Icon(Icons.undo),
+              // onPressed: hasChanges ? _onPressUndo : null,
+              onPressed: _onPressUndo),
+          IconButton(
+            icon: Icon(Icons.restore),
+            // onPressed: hasChanges ? _onPressRestore : null,
+            onPressed: _onPressRestore,
+          ),
+        ],
+      ),
       body: Center(
         child: Column(
           children: [
@@ -69,7 +120,11 @@ class _EditNoteState extends State<EditNote> {
                 child: TextField(
                   controller: _controller,
                   decoration: InputDecoration(
-                      contentPadding: EdgeInsets.symmetric(horizontal: 10)),
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 10,
+                    ),
+                  ),
                   onChanged: _onContentsChanged,
                   scrollPadding: EdgeInsets.all(20.0),
                   keyboardType: TextInputType.multiline,
