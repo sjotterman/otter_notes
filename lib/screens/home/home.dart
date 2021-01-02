@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:otter_notes/screens/edit_note/edit_note.dart';
 import 'package:otter_notes/screens/edit_note/settings.dart';
 import 'package:otter_notes/screens/home/note.dart';
@@ -96,6 +97,33 @@ class _HomeState extends State<Home> {
         ));
   }
 
+  void _onPressDailyNote() {
+    final now = new DateTime.now();
+
+    final DateFormat formatter = DateFormat('yyyy-MM-dd');
+    final String dailyNoteTitle = formatter.format(now) + '.md';
+    var existingNotes = _allNotes.where((note) {
+      return note.fileName == dailyNoteTitle;
+    }).toList();
+    if (existingNotes == null) {
+      NoteService().createNote(dailyNoteTitle).then((newNote) {
+        _getNoteList();
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => EditNote(newNote),
+            ));
+      });
+    } else {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EditNote(existingNotes[0]),
+          ));
+    }
+    _clearSearch();
+  }
+
   void _onPressRefresh() {
     print('refreshing');
     _getNoteList();
@@ -115,6 +143,10 @@ class _HomeState extends State<Home> {
       appBar: AppBar(
         title: Text('Search / Create Notes'),
         actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.calendar_today),
+            onPressed: _onPressDailyNote,
+          ),
           IconButton(
             icon: Icon(Icons.settings),
             onPressed: _onPressSettings,
