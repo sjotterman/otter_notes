@@ -18,6 +18,7 @@ class Debouncer {
   }
 }
 
+// TODO: action for deleting note
 class EditNote extends StatefulWidget {
   EditNote(this.note, {Key key}) : super(key: key);
   final Note note;
@@ -44,12 +45,11 @@ class _EditNoteState extends State<EditNote> {
 
   _EditNoteState(this.note);
 
-  // TODO: find a better way to save changes rather than on every edit. Undo?
+  // TODO: find a better way to save changes rather than on every edit.
   void _onContentsChanged(text) {
     _debouncer.run(() {
       NoteService().writeNote(note.fileName, text);
       history.add(text);
-      print("history: " + history.toString());
     });
   }
 
@@ -121,7 +121,6 @@ class _EditNoteState extends State<EditNote> {
       newText = history.last;
       _controller.text = newText;
     });
-    print(newText);
     NoteService().writeNote(note.fileName, newText);
   }
 

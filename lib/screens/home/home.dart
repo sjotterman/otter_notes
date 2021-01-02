@@ -129,6 +129,31 @@ class _HomeState extends State<Home> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
+            Expanded(
+              child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: _filteredNotes.length,
+                  itemBuilder: (context, index) {
+                    return NoteListItem(
+                      note: _filteredNotes[index],
+                      onFinishEdit: _onFinishEdit,
+                    );
+                  }),
+            ),
+            if (_showCreateButton)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("Create '$_searchFieldText'"),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      navigateToNewNote();
+                    },
+                    label: Text('Create'),
+                    icon: Icon(Icons.add),
+                  )
+                ],
+              ),
             TextField(
               autofocus: true,
               autocorrect: false,
@@ -145,31 +170,6 @@ class _HomeState extends State<Home> {
               ),
               onChanged: _onSearchChanged,
               onEditingComplete: _onEditingComplete,
-            ),
-            if (_showCreateButton)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text("Create '$_searchFieldText'"),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      navigateToNewNote();
-                    },
-                    label: Text('Create'),
-                    icon: Icon(Icons.add),
-                  )
-                ],
-              ),
-            Expanded(
-              child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: _filteredNotes.length,
-                  itemBuilder: (context, index) {
-                    return NoteListItem(
-                      note: _filteredNotes[index],
-                      onFinishEdit: _onFinishEdit,
-                    );
-                  }),
             ),
           ],
         ),
