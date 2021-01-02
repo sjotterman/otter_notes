@@ -23,27 +23,54 @@ class _SettingsState extends State<Settings> {
   Future<void> _onPressEditDir() async {
     String result = await FilePicker.platform.getDirectoryPath();
     if (result != null) {
-      NoteService().setNoteDir(result).then((_) {
-        NoteService().noteDir.then((dir) {
-          print('updated dir: $dir');
-          setState(() {
-            _noteDir = dir;
-          });
-        });
+      await NoteService().setNoteDir(result);
+      var dir = await NoteService().noteDir;
+      setState(() {
+        _noteDir = dir;
       });
     }
   }
 
-  Future<void> _onPressResetDir() async {
-    // TODO: confirmation prompt
-    await NoteService().resetNoteDir().then((_) {
-      NoteService().noteDir.then((dir) {
-        print('updated dir: $dir');
-        setState(() {
-          _noteDir = dir;
-        });
-      });
+  Future<void> _resetDir() async {
+    await NoteService().resetNoteDir();
+    var dir = await NoteService().noteDir;
+    setState(() {
+      _noteDir = dir;
     });
+  }
+
+  showResetConfirmDialog(BuildContext context) {
+    // set up the buttons
+    Widget cancelButton = FlatButton(
+      child: Text("Cancel"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+    Widget continueButton = FlatButton(
+      child: Text("Continue"),
+      onPressed: () {
+        _resetDir();
+        Navigator.of(context).pop();
+      },
+    );
+
+    AlertDialog alert = AlertDialog(
+      title: Text("AlertDialog"),
+      content: Text("Are you sure you want to reset the note directory?"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 
   @override
@@ -63,7 +90,9 @@ class _SettingsState extends State<Settings> {
                 icon: Icon(Icons.edit),
               ),
               ElevatedButton.icon(
-                onPressed: _onPressResetDir,
+                onPressed: () {
+                  showResetConfirmDialog(context);
+                },
                 label: Text('Reset'),
                 icon: Icon(Icons.remove),
               ),
