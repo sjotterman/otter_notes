@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:otter_notes/services/note_service.dart';
 import 'package:file_picker/file_picker.dart';
@@ -23,17 +21,29 @@ class _SettingsState extends State<Settings> {
   }
 
   Future<void> _onPressEditDir() async {
-    // TODO: open file picker
-    // set new directory
-    print('edit dir');
-    FilePickerResult result = await FilePicker.platform.pickFiles();
+    String result = await FilePicker.platform.getDirectoryPath();
     if (result != null) {
-      File file = File(result.files.single.path);
-      print(file.path);
-    } else {
-      print('cancellled');
-      // User canceled the picker
+      NoteService().setNoteDir(result).then((_) {
+        NoteService().noteDir.then((dir) {
+          print('updated dir: $dir');
+          setState(() {
+            _noteDir = dir;
+          });
+        });
+      });
     }
+  }
+
+  Future<void> _onPressResetDir() async {
+    // TODO: confirmation prompt
+    await NoteService().resetNoteDir().then((_) {
+      NoteService().noteDir.then((dir) {
+        print('updated dir: $dir');
+        setState(() {
+          _noteDir = dir;
+        });
+      });
+    });
   }
 
   @override
@@ -51,7 +61,12 @@ class _SettingsState extends State<Settings> {
                 onPressed: _onPressEditDir,
                 label: Text('Edit'),
                 icon: Icon(Icons.edit),
-              )
+              ),
+              ElevatedButton.icon(
+                onPressed: _onPressResetDir,
+                label: Text('Reset'),
+                icon: Icon(Icons.remove),
+              ),
             ],
           ),
         ));

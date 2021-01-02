@@ -3,13 +3,25 @@ import 'package:otter_notes/screens/home/note.dart';
 import 'package:path/path.dart' as path;
 
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class NoteService {
-  // TODO: user selectable path
   Future<String> get noteDir async {
     final directory = await getApplicationDocumentsDirectory();
+    final prefs = await SharedPreferences.getInstance();
 
-    return directory.path;
+    final savedNoteDir = prefs.getString('savedNoteDir');
+    return savedNoteDir ?? directory.path;
+  }
+
+  Future<void> setNoteDir(String dirName) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('savedNoteDir', dirName);
+  }
+
+  Future<void> resetNoteDir() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.remove('savedNoteDir');
   }
 
   Future<File> writeNote(String fileName, String content) async {
