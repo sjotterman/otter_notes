@@ -27,7 +27,6 @@ class NoteService {
   Future<File> writeNote(String fileName, String content) async {
     final path = await noteDir;
     final file = File('$path/$fileName');
-    print('Writing: $content');
     return file.writeAsString(content);
   }
 

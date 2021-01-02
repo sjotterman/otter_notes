@@ -42,6 +42,7 @@ class _EditNoteState extends State<EditNote> {
 
   _EditNoteState(this.note);
 
+  // TODO: find a better way to save changes rather than on every edit. Undo?
   void _onContentsChanged(text) {
     _debouncer.run(() {
       NoteService().writeNote(note.fileName, text);
