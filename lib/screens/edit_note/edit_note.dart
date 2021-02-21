@@ -31,10 +31,12 @@ class _EditNoteState extends State<EditNote> {
   final Note note;
   final List<String> history = [];
   final _debouncer = Debouncer(milliseconds: 500);
-  final TextEditingController _controller = new TextEditingController();
+  TextEditingController _controller;
 
   void initState() {
     super.initState();
+    _controller = new TextEditingController();
+    _controller.addListener(_onTextChanged);
     NoteService().readNote(note.fileName).then((contents) {
       setState(() {
         _controller.text = contents;
@@ -43,10 +45,21 @@ class _EditNoteState extends State<EditNote> {
     });
   }
 
+  void _onTextChanged() {
+    final text = _controller.text;
+    _controller.value = _controller.value.copyWith(
+      text: text,
+      selection:
+          TextSelection(baseOffset: text.length, extentOffset: text.length),
+      composing: TextRange.empty,
+    );
+    _writeChangedText(text);
+  }
+
   _EditNoteState(this.note);
 
   // TODO: find a better way to save changes rather than on every edit.
-  void _onContentsChanged(text) {
+  void _writeChangedText(text) {
     _debouncer.run(() {
       NoteService().writeNote(note.fileName, text);
       history.add(text);
@@ -61,7 +74,6 @@ class _EditNoteState extends State<EditNote> {
   }
 
   void _restoreNote() {
-    print('press restore');
     if (history.length < 2) {
       // TODO: Alert here
       print('No further changes!');
@@ -110,7 +122,6 @@ class _EditNoteState extends State<EditNote> {
   }
 
   void _onPressUndo() {
-    print('press undo');
     if (history.length < 2) {
       print('history is smaller than 2');
       return;
@@ -157,7 +168,6 @@ class _EditNoteState extends State<EditNote> {
                       vertical: 10,
                     ),
                   ),
-                  onChanged: _onContentsChanged,
                   scrollPadding: EdgeInsets.all(20.0),
                   keyboardType: TextInputType.multiline,
                   maxLines: null,
