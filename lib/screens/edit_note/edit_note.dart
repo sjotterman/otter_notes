@@ -54,6 +54,25 @@ class _EditNoteState extends State<EditNote> {
     _writeChangedText(text);
   }
 
+  void _onPressUp() {
+    final text = _controller.text;
+    _controller.value = _controller.value.copyWith(
+      text: text,
+      selection: TextSelection(baseOffset: -1, extentOffset: 0),
+      composing: TextRange.empty,
+    );
+  }
+
+  void _onPressDown() {
+    final text = _controller.text;
+    _controller.value = _controller.value.copyWith(
+      text: text,
+      selection:
+          TextSelection(baseOffset: text.length, extentOffset: text.length),
+      composing: TextRange.empty,
+    );
+  }
+
   _EditNoteState(this.note);
 
   // TODO: find a better way to save changes rather than on every edit.
@@ -141,6 +160,12 @@ class _EditNoteState extends State<EditNote> {
       appBar: AppBar(
         title: Text(note.name),
         actions: <Widget>[
+          IconButton(
+              icon: Icon(Icons.keyboard_arrow_up),
+              // onPressed: hasChanges ? _onPressUndo : null,
+              onPressed: _onPressUp),
+          IconButton(
+              icon: Icon(Icons.keyboard_arrow_down), onPressed: _onPressDown),
           IconButton(
               icon: Icon(Icons.undo),
               // onPressed: hasChanges ? _onPressUndo : null,
