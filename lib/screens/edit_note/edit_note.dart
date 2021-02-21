@@ -49,8 +49,6 @@ class _EditNoteState extends State<EditNote> {
     final text = _controller.text;
     _controller.value = _controller.value.copyWith(
       text: text,
-      selection:
-          TextSelection(baseOffset: text.length, extentOffset: text.length),
       composing: TextRange.empty,
     );
     _writeChangedText(text);
