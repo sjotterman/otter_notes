@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart';
 
 import 'package:flutter/material.dart';
 import 'package:otter_notes/screens/home/note.dart';
@@ -48,9 +47,7 @@ class _EditNoteState extends State<EditNote> {
   void _onTextChanged() {
     final text = _controller.text;
     _controller.value = _controller.value.copyWith(
-      text: text,
-      composing: TextRange.empty,
-    );
+        text: text, selection: TextSelection.collapsed(offset: text.length));
     _writeChangedText(text);
   }
 
@@ -106,13 +103,13 @@ class _EditNoteState extends State<EditNote> {
 
   _showResetConfirmDialog(BuildContext context) {
     // set up the buttons
-    Widget cancelButton = FlatButton(
+    Widget cancelButton = TextButton(
       child: Text("Cancel"),
       onPressed: () {
         Navigator.of(context).pop();
       },
     );
-    Widget continueButton = FlatButton(
+    Widget continueButton = TextButton(
       child: Text("Discard"),
       onPressed: () {
         _restoreNote();
